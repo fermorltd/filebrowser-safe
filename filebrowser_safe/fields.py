@@ -1,11 +1,8 @@
 from __future__ import unicode_literals
-from future.builtins import str, super
 
-import os
 import datetime
 
 from django import forms
-from django.conf import settings
 from django.core.files.storage import default_storage
 from django.db.models.fields import Field
 from django.db.models.fields.files import FileDescriptor
@@ -13,10 +10,11 @@ from django.forms.widgets import Input
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
+from future.builtins import super
 
-from filebrowser_safe.settings import *
 from filebrowser_safe.base import FieldFileObject
 from filebrowser_safe.functions import get_directory
+from filebrowser_safe.settings import *
 
 
 class FileBrowseWidget(Input):
@@ -45,7 +43,7 @@ class FileBrowseWidget(Input):
             fullpath = os.path.join(get_directory(), directory)
             if not default_storage.isdir(fullpath):
                 default_storage.makedirs(fullpath)
-        final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
+        final_attrs = dict(type=self.input_type, name=name, **attrs)
         final_attrs['search_icon'] = URL_FILEBROWSER_MEDIA + 'img/filebrowser_icon_show.gif'
         final_attrs['directory'] = directory
         final_attrs['extensions'] = self.extensions

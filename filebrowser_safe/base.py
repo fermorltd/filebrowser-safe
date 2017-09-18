@@ -1,16 +1,17 @@
 from __future__ import unicode_literals
-# coding: utf-8
+
+import datetime
+import mimetypes
+import time
 
 import os
-import time
-import datetime
 import warnings
-import mimetypes
-
 from django.core.files.storage import default_storage
 from django.db.models.fields.files import FieldFile
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
+
+# coding: utf-8
 
 try:
     from django.utils.encoding import smart_text

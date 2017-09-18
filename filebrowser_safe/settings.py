@@ -1,21 +1,15 @@
 from __future__ import unicode_literals
-# coding: utf-8
 
 # imports
 import os
-
 # django imports
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-# settings for django-tinymce
-try:
-    import tinymce.settings
-    DEFAULT_URL_TINYMCE = tinymce.settings.JS_BASE_URL + '/'
-    DEFAULT_PATH_TINYMCE = tinymce.settings.JS_ROOT + '/'
-except ImportError:
-    DEFAULT_URL_TINYMCE = settings.STATIC_URL + "grappelli/tinymce/jscripts/tiny_mce/"
-    DEFAULT_PATH_TINYMCE = os.path.join(settings.MEDIA_ROOT, 'admin/tinymce/jscripts/tiny_mce/')
+# coding: utf-8
+
+DEFAULT_URL_TINYMCE = settings.STATIC_URL + "grappelli/tinymce/jscripts/tiny_mce/"
+DEFAULT_PATH_TINYMCE = os.path.join(settings.MEDIA_ROOT, 'admin/tinymce/jscripts/tiny_mce/')
 
 # Set to True in order to see the FileObject when Browsing.
 DEBUG = getattr(settings, "FILEBROWSER_DEBUG", False)

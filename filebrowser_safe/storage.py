@@ -1,13 +1,15 @@
 from __future__ import unicode_literals
-# coding: utf-8
 
 # PYTHON IMPORTS
 import os
 import shutil
-
+from django.core.cache import cache
+from django.core.files.base import ContentFile
 # DJANGO IMPORTS
 from django.core.files.move import file_move_safe
-from django.core.files.base import ContentFile
+
+
+# coding: utf-8
 
 
 class StorageMixin(object):
@@ -69,7 +71,13 @@ class FileSystemStorageMixin(StorageMixin):
 class S3BotoStorageMixin(StorageMixin):
 
     def isfile(self, name):
-        return self.exists(name) and self.size(name) > 0
+        if cache.get(str(name)) is None:
+            returnable_status = self.exists(name) and self.size(name) > 0
+            cache.set(str(name), returnable_status, 500)
+            return returnable_status
+        else:
+            return cache.get(str(name))
+        # return
 
     def isdir(self, name):
         # That's some inefficient implementation...
@@ -78,16 +86,26 @@ class S3BotoStorageMixin(StorageMixin):
         if not name:  # Empty name is a directory
             return True
 
-        if self.isfile(name):
+        if name == "media/uploads/" or name == "/media/uploads/":
+            print("media/uploads, skip!")
             return False
+        else:
 
-        name = self._normalize_name(self._clean_name(name))
-        dirlist = self.bucket.list(self._encode_name(name))
+            if self.isfile(name):
+                return False
 
-        # Check whether the iterator is empty
-        for item in dirlist:
-            return True
-        return False
+            name = self._normalize_name(self._clean_name(name))
+            dirlist = self.bucket.list(self._encode_name(name))
+
+            # Check whether the iterator is empty
+            print ("checking dirlist")
+            dirlist_list = list(dirlist)
+            if len(dirlist_list) > 1:
+                for item in dirlist_list:
+                    print ("checked item - " + item.key)
+                    return True
+                return False
+            return False
 
     def move(self, old_file_name, new_file_name, allow_overwrite=False):
 
