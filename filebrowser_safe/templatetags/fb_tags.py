@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
+from future.builtins import str
 
 from django import template
 from django.utils.http import urlquote
-from future.builtins import str
 
 from filebrowser_safe.settings import SELECT_FORMATS, EXTENSIONS
 
