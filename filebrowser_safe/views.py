@@ -1,20 +1,22 @@
 from __future__ import unicode_literals
 
 from json import dumps
-
+import os
 import re
-from django import forms
+
 from django.conf import settings as django_settings
-from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
-from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.dispatch import Signal
+from django import forms
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, HttpResponse
+from django.template import RequestContext as Context
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.clickjacking import xframe_options_sameorigin
@@ -134,12 +136,9 @@ def browse(request):
         if append:
             try:
                 # COUNTER/RESULTS
+                results_var['delete_total'] += 1
                 if fileobject.filetype == 'Image':
                     results_var['images_total'] += 1
-                if fileobject.filetype != 'Folder':
-                    results_var['delete_total'] += 1
-                elif fileobject.filetype == 'Folder' and fileobject.is_empty:
-                    results_var['delete_total'] += 1
                 if query.get('type') and query.get('type') in SELECT_FORMATS and fileobject.filetype in SELECT_FORMATS[query.get('type')]:
                     results_var['select_total'] += 1
                 elif not query.get('type'):
@@ -474,7 +473,8 @@ def rename(request):
                 (errno, strerror) = xxx_todo_changeme1.args
                 form.errors['name'] = forms.util.ErrorList([_('Error.')])
     else:
-        form = RenameForm(abs_path, file_extension)
+        file_basename = os.path.splitext(filename)[0]
+        form = RenameForm(abs_path, file_extension, initial={'name': file_basename})
 
     return render(request, 'filebrowser/rename.html', {
         'form': form,

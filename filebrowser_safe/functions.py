@@ -1,21 +1,20 @@
 from __future__ import unicode_literals
-
-import unicodedata
-from time import gmtime, strftime, localtime, time
+from future.builtins import int
+from future.builtins import str
+# coding: utf-8
 
 # imports
 import re
-from django.core.files.storage import default_storage
+import unicodedata
+from time import gmtime, strftime, localtime, time
+
 # django imports
 from django.utils import six
-from future.builtins import int
-from future.builtins import str
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 # filebrowser imports
 from filebrowser_safe.settings import *
-
-
-# coding: utf-8
 
 
 def get_directory():
@@ -24,12 +23,14 @@ def get_directory():
     the site's ID if ``MEDIA_LIBRARY_PER_SITE`` is ``True``, and also
     creating the root directory if missing.
     """
+    from mezzanine.conf import settings as mezz_settings
+    from mezzanine.utils.sites import current_site_id
     dirname = DIRECTORY
-    # if getattr(mezz_settings, "MEDIA_LIBRARY_PER_SITE", False):
-    #     dirname = os.path.join(dirname, "site-%s" % current_site_id())
-    # fullpath = os.path.join(mezz_settings.MEDIA_ROOT, dirname)
-    # if not default_storage.isdir(fullpath):
-    #     default_storage.makedirs(fullpath)
+    if getattr(mezz_settings, "MEDIA_LIBRARY_PER_SITE", False):
+        dirname = os.path.join(dirname, "site-%s" % current_site_id())
+    fullpath = os.path.join(mezz_settings.MEDIA_ROOT, dirname)
+    if not default_storage.listdir(fullpath):
+        default_storage.makedirs(fullpath)
     return dirname
 
 
@@ -92,7 +93,7 @@ def get_path(path):
     """
     Get Path.
     """
-    if path.startswith('.') or os.path.isabs(path) or not default_storage.isdir(os.path.join(get_directory(), path)):
+    if path.startswith('.') or os.path.isabs(path) or not default_storage.listdir(os.path.join(get_directory(), path)):
         return None
     return path
 

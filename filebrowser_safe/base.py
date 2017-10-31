@@ -1,17 +1,16 @@
 from __future__ import unicode_literals
-
-import datetime
-import mimetypes
-import time
+# coding: utf-8
 
 import os
+import time
+import datetime
 import warnings
+import mimetypes
+
 from django.core.files.storage import default_storage
 from django.db.models.fields.files import FieldFile
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
-
-# coding: utf-8
 
 try:
     from django.utils.encoding import smart_text
@@ -95,7 +94,14 @@ class FileObjectAPI(object):
 
     @cached_property
     def is_folder(self):
-        return default_storage.isdir(self.path)
+        try:
+            if ".folder" in default_storage.listdir(self.path):
+                return True
+            else:
+                return False
+        except IndexError:
+            return False
+
 
     @property
     def is_empty(self):
