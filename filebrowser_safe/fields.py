@@ -41,7 +41,7 @@ class FileBrowseWidget(Input):
                 directory = self.directory()
             directory = os.path.normpath(datetime.datetime.now().strftime(directory))
             fullpath = os.path.join(get_directory(), directory)
-            if not default_storage.isdir(fullpath):
+            if not default_storage.listdir(fullpath):
                 default_storage.makedirs(fullpath)
         final_attrs = dict(type=self.input_type, name=name, **attrs)
         final_attrs['search_icon'] = URL_FILEBROWSER_MEDIA + 'img/filebrowser_icon_show.gif'
