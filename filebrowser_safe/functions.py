@@ -29,7 +29,7 @@ def get_directory():
     if getattr(mezz_settings, "MEDIA_LIBRARY_PER_SITE", False):
         dirname = os.path.join(dirname, "site-%s" % current_site_id())
     fullpath = os.path.join(mezz_settings.MEDIA_ROOT, dirname)
-    if not default_storage.isdir(fullpath):
+    if not default_storage.listdir(fullpath):
         default_storage.makedirs(fullpath)
     return dirname
 
@@ -93,7 +93,7 @@ def get_path(path):
     """
     Get Path.
     """
-    if path.startswith('.') or os.path.isabs(path) or not default_storage.isdir(os.path.join(get_directory(), path)):
+    if path.startswith('.') or os.path.isabs(path) or not default_storage.listdir(os.path.join(get_directory(), path)):
         return None
     return path
 
