@@ -11,7 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.dispatch import Signal
 from django import forms
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
@@ -34,7 +34,6 @@ from filebrowser_safe.functions import (get_path, get_breadcrumbs,
     convert_filename)
 from filebrowser_safe.templatetags.fb_tags import query_helper
 from filebrowser_safe.base import FileObject
-from filebrowser_safe.decorators import flash_login_required
 
 from mezzanine.utils.importing import import_dotted_path
 
@@ -128,7 +127,9 @@ def browse(request):
 
         # FILTER / SEARCH
         append = False
-        if fileobject.filetype == request.GET.get('filter_type', fileobject.filetype) and get_filterdate(request.GET.get('filter_date', ''), fileobject.date):
+        if fileobject.filetype == request.GET.get('filter_type', fileobject.filetype) and fileobject.filetype == "Folder":
+            append = True
+        elif fileobject.filetype == request.GET.get('filter_type', fileobject.filetype) and get_filterdate(request.GET.get('filter_date', ''), fileobject.date):
             append = True
         if request.GET.get('q') and not re.compile(request.GET.get('q').lower(), re.M).search(file.lower()):
             append = False
@@ -306,7 +307,6 @@ filebrowser_post_upload = Signal(providing_args=["path", "file"])
 
 
 @csrf_exempt
-@flash_login_required
 @staff_member_required
 def _upload_file(request):
     """

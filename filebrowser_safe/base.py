@@ -61,7 +61,7 @@ class FileObjectAPI(object):
     def date(self):
         if self.exists:
             return time.mktime(
-                default_storage.modified_time(self.name).timetuple())
+                default_storage.get_modified_time(self.path).timetuple())
         return None
 
     @property
@@ -94,14 +94,7 @@ class FileObjectAPI(object):
 
     @cached_property
     def is_folder(self):
-        try:
-            if ".folder" in default_storage.listdir(self.name):
-                return True
-            else:
-                return False
-        except IndexError:
-            return False
-
+        return default_storage.isdir(self.path)
 
     @property
     def is_empty(self):
