@@ -1,9 +1,8 @@
-*.egg-info
-*.eggs/
-*.pyc
 .DS_Store
-.idea
+.svn
 .tox
-.vscode
-/build/
-/dist/
+*.pyc
+*.eggs/
+*.egg-info
+.idea
+mezzanine-git/
